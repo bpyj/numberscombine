@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numbers, Combine! - Conductor Timmy's Mission</title>
+    <style>
+        /* CSS remains the same for correct wrapping */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        #target-sum {
+            font-size: 3em;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            min-height: 50px; 
+            word-wrap: break-word; 
+        }
+        #card-container {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .card {
+            min-width: 150px; 
+            min-height: 120px; 
+            height: auto;      
+            background-color: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            
+            display: flex;
+            flex-direction: row; 
+            flex-wrap: wrap;     
+            align-items: center;
+            justify-content: center;
+            
+            overflow: visible; 
+            text-align: center; 
+            line-height: 1.1; 
+            
+            font-size: 1.8em; 
+            cursor: pointer;
+            transition: background-color 0.1s;
+            padding: 10px;
+        }
+        .card:hover {
+            background-color: #ddd;
+        }
+        .selected {
+            background-color: #ffcc00 !important; 
+            border-color: #cc9900;
+        }
+        #feedback {
+            font-size: 1.5em;
+            min-height: 40px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚂 Conductor Timmy's Train Route! 🚂</h1>
+    <h2>Timmy needs to connect new carriages. Find the two small groups of carriages that match the total length required!</h2>
+    
+    <div id="target-sum"></div>
+    
+    <div id="card-container"></div>
+    
+    <div id="feedback"></div>
+
+    <button onclick="startGame()">Next Round</button>
+
+    <script src="app.js"></script>
+</body>
+</html>
