@@ -2,8 +2,11 @@ let targetSum = 0;
 let selectedCards = []; 
 let selectedValues = []; 
 
-const TARGET_RANGE = [5, 10]; 
+// TARGET RANGE IS CORRECT: The target sum will be randomly chosen between 2 and 10.
+const TARGET_RANGE = [2, 10]; 
 const CARD_POOL_SIZE = 3;     
+const MAX_ADDEND_SIZE = 7; 
+
 const CAR_EMOTICON = '🚃'; 
 const LOCOMOTIVE_EMOTICON = '🚂'; 
 const STORY_CHARACTER = 'Timmy the Conductor'; 
@@ -31,6 +34,8 @@ function getDotRepresentation(value) {
     return numeralDisplay + `<div style="font-size: 1.2em;">${emoticons.trim()}</div>`;
 }
 
+// --- Game Logic ---
+
 /**
  * Generates a new game state (Target Sum and Card Pool).
  */
@@ -40,38 +45,76 @@ function startGame() {
     selectedValues = [];
     document.getElementById('card-container').innerHTML = '';
     
-    // 2. Determine Target Sum
+    // 2. Determine Target Sum (Randomly between 2 and 10)
     targetSum = Math.floor(Math.random() * (TARGET_RANGE[1] - TARGET_RANGE[0] + 1)) + TARGET_RANGE[0];
+    console.log("New Target Sum generated:", targetSum); // Debugging log
+    
     document.getElementById('target-sum').innerHTML = getDotRepresentation(targetSum);
 
-    // 3. Generate Cards and Pool (Logic remains the same)
-    let A = Math.floor(Math.random() * (targetSum - 2)) + 1; 
-    let B = targetSum - A;
+    // 3. Generate Correct Pair (Addends A and B)
+    let A = 0;
+    let B = 0;
+    
+    // Loop until we find a valid pair (A and B must be >= 1 and <= MAX_ADDEND_SIZE)
+    while (A < 1 || A > MAX_ADDEND_SIZE || B < 1 || B > MAX_ADDEND_SIZE) {
+        // A is chosen between 1 and Target - 1
+        A = Math.floor(Math.random() * (targetSum - 1)) + 1; 
+        B = targetSum - A;
+    }
+    
+    // 4. Create Card Pool Array
     let cardPool = [A, B];
     
-    while (cardPool.length < CARD_POOL_SIZE) {
-        let distractor = Math.floor(Math.random() * 9) + 1; 
+    // 5. Add only ONE distractor until the pool is exactly 3 cards
+    let distractorFound = false;
+    while (!distractorFound) {
+        // Distractor can be any small number between 1 and MAX_ADDEND_SIZE (7)
+        let distractor = Math.floor(Math.random() * MAX_ADDEND_SIZE) + 1; 
+        
+        // --- CRITICAL FIX: Simplified Distractor Logic ---
+        // 1. Must not be A or B (unique value in the card pool)
+        // 2. Must not equal the target sum
         if (
             !cardPool.includes(distractor) && 
-            distractor + A !== targetSum && 
-            distractor + B !== targetSum && 
-            distractor < targetSum &&
-            distractor > 0
+            distractor !== targetSum 
         ) {
-            cardPool.push(distractor);
+            // Check if D + A or D + B = Target. Only add if it does NOT create the target sum.
+            if ((distractor + A !== targetSum) && (distractor + B !== targetSum)) {
+                cardPool.push(distractor);
+                distractorFound = true;
+            } 
+            // If the simple distractor check fails (e.g., target=5, A=2, B=3, distractor=4, 4+A=6, 4+B=7. OK)
+            // But if target=8, A=3, B=5, distractor=3 is already in the pool. distractor=4, 4+5=9. OK. distractor=6, 6+2=8! FAIL.
+            // Let's use the simplest condition that prevents infinite loop for small numbers:
+            // Ensure the distractor is not A or B, and doesn't match the target sum.
+            // The original logic was causing the hang, let's stick to the simplest unique check:
+            
+            // Reverting to the logic that worked for 5-10, but ensuring the distractor is small
+             if (
+                !cardPool.includes(distractor) && 
+                distractor < targetSum && // Keep distractor small
+                distractor + A !== targetSum && 
+                distractor + B !== targetSum
+            ) {
+                cardPool.push(distractor);
+                distractorFound = true;
+            }
         }
     }
+    // Note: The loop should no longer hang because targetSum is at least 2, A and B are at least 1, and MAX_ADDEND_SIZE is 7.
+    // The previous constraints were mathematically correct but too restrictive for low random number generation, leading to too many retries.
 
-    // Shuffle the card pool
+    // 6. Shuffle the card pool
     cardPool.sort(() => Math.random() - 0.5);
 
-    // 4. Render Cards
+    // 7. Render Cards
     renderCards(cardPool);
     
-    // 5. STORY INTRODUCTION PROMPT
+    // 8. STORY INTRODUCTION PROMPT
     document.getElementById('feedback').innerHTML = `Help **${STORY_CHARACTER}** pick up **${targetSum} ${ITEM_NAME}**! Which two piles equal the required length?`;
 }
 
+// --- (renderCards, handleCardClick, evaluateAnswer functions are unchanged) ---
 /**
  * Renders the clickable card elements in the container.
  */
@@ -143,8 +186,6 @@ function evaluateAnswer() {
         const finalTrain = `${locomotive}${rewardTrainCarriages.trim()}`;
 
         // 2. Display the reward train above the feedback text
-        // CRITICAL FIX: Applying font-size: 1.2em to the final train display to match the card carriage size.
-        // The numeral is left at 1.5em for boldness.
         document.getElementById('target-sum').innerHTML = 
             `<div style="font-size: 1.5em; font-weight: bold; margin-bottom: 5px;">${targetSum} Carriages Ready!</div>
             <div style="font-size: 1.2em;">${finalTrain}</div>`; 
