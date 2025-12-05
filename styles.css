@@ -1,0 +1,158 @@
+/* --------- Base Layout --------- */
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    background-color: #fafafa;
+}
+
+h1,
+h2 {
+    color: #333;
+    margin: 0 0 10px;
+}
+
+/* Target sum area (number / reward train) */
+#target-sum {
+    font-size: 3em;
+    margin: 20px auto;
+    line-height: 1.2;
+    min-height: 60px;
+    word-wrap: break-word;
+}
+
+/* Card container */
+#card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+/* Feedback text */
+#feedback {
+    font-size: 1.4em;
+    min-height: 40px;
+    margin: 10px 0 20px;
+}
+
+/* Button */
+button {
+    font-size: 1.1em;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 2px solid #555;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #eee;
+}
+
+/* --------- Cards (Number + Carriages) --------- */
+
+/* Individual cards */
+.card {
+    width: 100%;
+    max-width: 220px;        /* wide enough on desktop */
+    min-width: 140px;        /* not too tiny on mobile */
+    min-height: 110px;
+
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;  /* numeral on top, emojis below */
+    align-items: center;
+    justify-content: flex-start;
+
+    overflow: hidden;        /* safety – emojis will wrap inside */
+    text-align: center;
+    line-height: 1.1;
+    padding: 10px;
+
+    font-size: 1.6em;
+    cursor: pointer;
+    transition: background-color 0.1s, border-color 0.1s;
+}
+
+.card:hover {
+    background-color: #ddd;
+}
+
+/* Selected card state */
+.selected {
+    background-color: #ffcc00 !important;
+    border-color: #cc9900;
+}
+
+/* Emoji row inside cards (carriages) */
+.card .emoji-line {
+    display: flex;
+    flex-wrap: wrap;      /* allows carriages to wrap onto multiple rows */
+    justify-content: center;
+    width: 100%;
+    font-size: 0.9em;     /* slightly smaller than numeral */
+    line-height: 1.1;
+}
+
+/* --------- Animated Reward Train --------- */
+
+/* Wrapper holding the moving train */
+.train-track {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;  /* start at right edge */
+    margin-top: 10px;
+    overflow: hidden;           /* hide when it exits left */
+}
+
+/* The animated train itself */
+.train-drive {
+    display: inline-block;
+    white-space: nowrap;        /* keep train in one line */
+    position: relative;
+    animation: driveLeft 15s linear forwards;
+}
+
+/* Right → left animation */
+@keyframes driveLeft {
+    0% {
+        transform: translateX(30vw);
+    }
+    100% {
+        transform: translateX(-120vw);
+    }
+}
+
+/* --------- Responsive Tweaks --------- */
+
+@media (max-width: 480px) {
+    #target-sum {
+        font-size: 2.2em;
+    }
+
+    .card {
+        max-width: 180px;
+        min-width: 130px;
+        font-size: 1.4em;
+        padding: 8px;
+    }
+
+    .card .emoji-line {
+        font-size: 0.85em;
+    }
+
+    #feedback {
+        font-size: 1.2em;
+    }
+
+    .train-drive {
+        animation-duration: 12s;  /* slightly faster on small screens */
+    }
+}
